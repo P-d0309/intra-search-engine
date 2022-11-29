@@ -22,14 +22,22 @@ function App() {
   const getData = async () => {
     let dataArray = []
     const productsData = await axios.get(
-      `https://makeup-api.herokuapp.com/api/v1/products.json?brand=${search}`
+      `/code/rest/api/3/issue/picker?query=${search}`,
+      {
+        headers: {
+          'Authorization': 'Basic YXNpcnNhbGV3YWxhQG1hcnZlbGwuY29tOkhzZXc1Zm02Q1pvZ2Z6eTVXYk9COUQ2Rg==',
+        }
+      }
     );
+    
+    // console.log(productsData.data.sections[0].issues.length > 0);
 
-    if (productsData.data.length > 0) {
-      productsData.data.forEach((productData) => {
+    if (productsData.data.sections[0].issues.length > 0) {
+      productsData.data.sections[0].issues.forEach((productData) => {
+        console.log(productData)
         dataArray.push({
-          description: productData.description,
-          url: productData.product_link,
+          description: productData.summaryText,
+          url: "https://asirsalewala.atlassian.net/browse/"+ productData.keyHtml,
         });
       });
     }
@@ -123,7 +131,7 @@ function App() {
               return (
                 <Grid item sm={12}>
                   <Box m={1.5}>
-                    <Link href={result.url}>
+                    <Link href={result.url} target="_blank">
                       <Typography variant="h5">{result.url}</Typography>
                     </Link>
                     <Typography
