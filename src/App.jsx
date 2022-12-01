@@ -1,4 +1,16 @@
-import { Box, Container, FormControl, Grid, IconButton, Input, InputAdornment, InputLabel, Link, Skeleton, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  FormControl,
+  Grid,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+  Link,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
@@ -8,36 +20,41 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  
+
   const handleClick = () => {
     setSearchResults([]);
     setSearch(searchValue);
-  }
+  };
 
   useEffect(() => {
     if (search) {
       setIsLoading(true);
-      getData()};
+      getData();
+    }
   }, [search]);
   const getData = async () => {
-    let dataArray = []
-    const productsData = await axios.get(
-      `/code/rest/api/3/issue/picker?query=${search}`,
+    let dataArray = [];
+    let productsData = await axios.get(
+      `/code/rest/api/3/search?jql=text ~ ${search}&fields=description`,
       {
         headers: {
-          'Authorization': 'Basic YXNpcnNhbGV3YWxhQG1hcnZlbGwuY29tOkhzZXc1Zm02Q1pvZ2Z6eTVXYk9COUQ2Rg==',
-        }
+          Authorization:
+            "Basic YXNpcnNhbGV3YWxhQG1hcnZlbGwuY29tOkhzZXc1Zm02Q1pvZ2Z6eTVXYk9COUQ2Rg==",
+        },
       }
     );
-    
-    // console.log(productsData.data.sections[0].issues.length > 0);
+    productsData =   productsData.data;
 
-    if (productsData.data.sections[0].issues.length > 0) {
-      productsData.data.sections[0].issues.forEach((productData) => {
-        console.log(productData)
+    if (productsData.total > 0) {
+      productsData.issues.map((productData) => {
+        
+        console.log(productData);
+        
         dataArray.push({
-          description: productData.summaryText,
-          url: "https://asirsalewala.atlassian.net/browse/"+ productData.keyHtml,
+          description: productData.fields.description
+            ? productData.fields.description.content[0].content[0].text
+            : productData.self,
+          url: "https://asirsalewala.atlassian.net/browse/" + productData.key,
         });
       });
     }
@@ -45,7 +62,7 @@ function App() {
     const unisData = await axios.get(
       `http://universities.hipolabs.com/search?country=${search}`
     );
-    
+
     if (unisData.data.length > 0) {
       unisData.data.forEach((uniData) => {
         dataArray.push({
@@ -71,7 +88,7 @@ function App() {
     const citiesData = await axios.get(
       `https://nominatim.openstreetmap.org/search.php?city=${search}&format=jsonv2`
     );
-    
+
     if (citiesData.data.length > 0) {
       citiesData.data.forEach((cityData) => {
         dataArray.push({
@@ -85,7 +102,7 @@ function App() {
   };
   const handleChange = (e) => {
     setSearchValue(e.target.value);
-  }
+  };
   return (
     <Box minHeight={"100vh"}>
       <Container fixed sx={!search ? { minHeight: "100vh" } : ""}>
@@ -115,8 +132,8 @@ function App() {
         </Grid>
         {search && (
           <Grid container>
-            {
-              isLoading && [...Array(10)].map((v,i) => {
+            {isLoading &&
+              [...Array(10)].map((v, i) => {
                 return (
                   <Grid item sm={12}>
                     <Box m={1.5}>
@@ -125,8 +142,7 @@ function App() {
                     </Box>
                   </Grid>
                 );
-              })
-            }
+              })}
             {searchResults.map((result) => {
               return (
                 <Grid item sm={12}>
@@ -139,8 +155,7 @@ function App() {
                       dangerouslySetInnerHTML={{
                         __html: result.description,
                       }}
-                    >
-                    </Typography>
+                    ></Typography>
                   </Box>
                 </Grid>
               );

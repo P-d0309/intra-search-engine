@@ -7,7 +7,7 @@ export default defineConfig({
     proxy: {
       "/code": {
         target: "https://asirsalewala.atlassian.net",
-        changeOrigin: false,
+        changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/code/, ""),
       },
