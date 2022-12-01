@@ -8,13 +8,14 @@ import {
   InputAdornment,
   InputLabel,
   Link,
+  Pagination,
   Skeleton,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
-
+import Marvell from "./assets/Marvell.png";
 function App() {
   const [searchValue, setSearchValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,8 +48,6 @@ function App() {
 
     if (productsData.total > 0) {
       productsData.issues.map((productData) => {
-        
-        console.log(productData);
         
         dataArray.push({
           description: productData.fields.description
@@ -111,6 +110,9 @@ function App() {
           sx={!search ? { minHeight: "100vh" } : ""}
           alignContent={"center"}
         >
+          <Grid item sm={12} sx={{ display: search ? "none" : "block", pb: 2 }}>
+            <img src={Marvell} alt="logo" width={"100%"} />
+          </Grid>
           <Grid item xs={12}>
             <FormControl fullWidth variant={"standard"}>
               <InputLabel htmlFor="outlined-adornment-amount">
@@ -119,6 +121,11 @@ function App() {
               <Input
                 value={searchValue}
                 onChange={handleChange}
+                onKeyDownCapture={(e) => {
+                  if(e.code === "Enter") {
+                    handleClick();
+                  }
+                }}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton edge="end" onClick={handleClick}>
@@ -160,6 +167,9 @@ function App() {
                 </Grid>
               );
             })}
+            <Grid item sm={12} sx={{ display: searchResults.length > 0 ? "block" : "none" }}>
+              <Pagination count={10} color="primary" />
+            </Grid>
           </Grid>
         )}
       </Container>
